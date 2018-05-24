@@ -140,7 +140,7 @@
       },
       select: function(start, end) {
         $('#calendar').fullCalendar('unselect');
-        window.open('<%= Setting.plugin_mega_calendar['sub_path'] %>issues/new?issue[project_id]=<%= Setting.plugin_mega_calendar['issue_open_as_project'].first %>&issue[start_date]='+start.format("YYYY-MM-DD")+'&issue[due_date]='+end.format("YYYY-MM-DD")+'&issue[time_begin]='+start.format("HH:mm")+'&issue[time_end]='+end.format("HH:mm"), '_blank');
+        window.open('<%= Setting.plugin_mega_calendar['sub_path'] %>issues/new? <%= Setting.plugin_mega_calendar.blank? ? 'issue[project_id]=' + Setting.plugin_mega_calendar['issue_open_as_project'].first + '&' : '' %>issue[start_date]='+start.format("YYYY-MM-DD")+'&issue[due_date]='+end.format("YYYY-MM-DD")+'&issue[time_begin]='+start.format("HH:mm")+'&issue[time_end]='+end.format("HH:mm"), '_blank');
       },
     });
     set_active_button(user_query);
