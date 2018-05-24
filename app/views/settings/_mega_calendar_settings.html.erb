@@ -75,6 +75,16 @@
         </select>
       </td>
     </tr>
+    <tr>
+      <th><%= translate 'issue_open_as_project' %></th>
+      <td>
+        <select id="settings_issue_open_as_project" value="<%= settings['issue_open_as_project'] %>" name="settings[issue_open_as_project][]" multiple>
+          <% Project.all.each do |p| %>
+            <option value="<%= p.id.to_s %>" <%= (!Setting.plugin_mega_calendar['issue_open_as_project'].blank? && Setting.plugin_mega_calendar['issue_open_as_project'].include?(p.id.to_s) ? 'selected' : '') %>><%= p.name.to_s %></option>
+          <% end %>
+        </select>
+      </td>
+    </tr>
   </tbody>
 </table>
 <script type="text/javascript">
