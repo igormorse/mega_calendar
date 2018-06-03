@@ -22,7 +22,7 @@
 <script src='<%= Setting.plugin_mega_calendar['sub_path'] %>plugin_assets/mega_calendar/javascripts/fullcalendar/lib/moment.min.js'></script>
 <script src='<%= Setting.plugin_mega_calendar['sub_path'] %>plugin_assets/mega_calendar/javascripts/fullcalendar/fullcalendar.js'></script>
 <script src='<%= Setting.plugin_mega_calendar['sub_path'] %>plugin_assets/mega_calendar/javascripts/qtip2/jquery.qtip.min.js'></script>
-<script src='<%= Setting.plugin_mega_calendar['sub_path'] %>plugin_assets/mega_calendar/javascripts/fullcalendar/lang-all.js'></script>
+<script src='<%= Setting.plugin_mega_calendar['sub_path'] %>plugin_assets/mega_calendar/javascripts/fullcalendar/locale-all.js'></script>
 <script src='<%= Setting.plugin_mega_calendar['sub_path'] %>plugin_assets/mega_calendar/javascripts/jquery-serialize-object.min.js'></script>
 <style>
 .calendar_event {
@@ -67,11 +67,11 @@
   }
   $(document).ready(function() {
     $('#calendar').fullCalendar({
-        lang: '<%= js_locale %>',
+        locale: '<%= js_locale %>',
         defaultView: '<%= default_view %>',
         nowIndicator: '<%= default_now_indicator %>',
         navLinks: '<%= default_nav_links %>',
-        height: <%= calendar_height %>,
+        height: '<%= calendar_height %>',
         selectable: true,
         customButtons: {
                 myTickets: {

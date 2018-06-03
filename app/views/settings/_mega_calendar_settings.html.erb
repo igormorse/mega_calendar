@@ -10,6 +10,20 @@
     </tr>
 
     <tr>
+      <th><%= t('calendar_now_indicator') %>:</th>
+      <td>
+        <%= check_box_tag 'settings[calendar_now_indicator]', false, settings['calendar_now_indicator']  %>
+      </td>
+    </tr>
+
+    <tr>
+      <th><%= t('calendar_nav_links') %>:</th>
+      <td>
+        <%= check_box_tag 'settings[calendar_nav_links]', true, settings['calendar_nav_links']  %>
+      </td>
+    </tr>
+
+    <tr>
       <th><%= translate 'def_holiday_color' %></th>
       <td>
         <input type="text" id="settings_default_holiday_color" value="<%= settings['default_holiday_color'] %>" name="settings[default_holiday_color]" class="color" />
@@ -63,7 +77,7 @@
     <tr>
       <th><%= translate 'calendar_default_view' %></th>
       <td>
-        <%= select_tag 'settings[calendar_default_view]', options_for_select([['day', 'agendaDay'], ['week', 'agendaWeek'], ['month', 'month']], settings['calendar_default_view'].blank? ? 'week' : settings['calendar_default_view']) %>  
+        <%= select_tag 'settings[calendar_default_view]', options_for_select([[t('day'), 'agendaDay'], [t('week'), 'agendaWeek'], [t('month'), 'month']], settings['calendar_default_view'].blank? ? 'week' : settings['calendar_default_view']) %>  
       </td>
     </tr>
     <tr>
