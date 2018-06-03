@@ -46,25 +46,33 @@
         </tr>
       </table>
       <a href="#" class="icon icon-save" onclick="save_filters();"><%= translate 'button_save' %></a>
-      <hr>
-      <table>
-        <tr>
-          <td><%= translate 'use_saved_filter' %></td>
-          <td style="padding-left: 10px;">
-            <select id="sel_saved_filter" name="saved_filter">
-              <option value=""></option>
-              <% UserFilter.where(["user_filters.user_id = ? OR user_filters.user_id IS NULL",User.current.id]).each do |saved_filter| %>
-                <option value="<%= saved_filter.id %>"><%= saved_filter.filter_name %></option>
-              <% end %>
-            </select>
-          </td>
-        </tr>
-      </table>
-      <a href="#" class="icon icon-checked" onclick="use_saved_filter($('#sel_saved_filter').val());"><%= translate 'button_update' %></a>&nbsp;<a href="#" class="icon icon-del" onclick="window.location = '<%= Setting.plugin_mega_calendar['sub_path'] %>calendar/destroy_filter?id='+$('#sel_saved_filter').val();"><%= translate 'button_delete' %></a>
     </div>
   </div>
 </fieldset>
 </form>
+<table>
+  <tr>
+    <td><%= translate 'use_saved_filter' %></td>
+    <td style="padding-left: 10px;">
+      <% if false %>
+      <select id="sel_saved_filter" name="saved_filter">
+        <option value=""></option>
+        <% UserFilter.where(["user_filters.user_id = ? OR user_filters.user_id IS NULL",User.current.id]).each do |saved_filter| %>
+          <option value="<%= saved_filter.id %>"><%= saved_filter.filter_name %></option>
+        <% end %>
+      </select>
+      <% end %>
+      
+      <%= select_tag 'sel_saved_filter', options_from_collection_for_select(UserFilter.all,:id,:filter_name, Setting.try(:plugin_mega_calendar)[:calendar_default_filter]), :include_blank => true  %>
+      
+      <% if !Setting.try(:plugin_mega_calendar)[:calendar_default_filter].blank? %>
+        <script>use_saved_filter($('#sel_saved_filter').val());</script>
+      <% end %>
+    </td>
+  </tr>
+</table>
+<a href="#" class="icon icon-checked" onclick="use_saved_filter($('#sel_saved_filter').val());"><%= translate 'button_update' %></a>&nbsp;<a href="#" class="icon icon-del" onclick="window.location = '<%= Setting.plugin_mega_calendar['sub_path'] %>calendar/destroy_filter?id='+$('#sel_saved_filter').val();"><%= translate 'button_delete' %></a>
+
 <script type="text/javascript">
   function reset_and_reload_filters() {
     $('#calendar_filter input[type="checkbox"]').prop( "checked", false );

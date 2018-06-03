@@ -4,7 +4,7 @@ class CalendarController < ApplicationController
   before_filter(:check_plugin_right)
 
   def check_plugin_right
-    right = (!Setting.plugin_mega_calendar['allowed_users'].blank? && Setting.plugin_mega_calendar['allowed_users'].include?(User.current.id.to_s) ? true : false)
+    right = (!Setting.plugin_mega_calendar['allowed_users'].blank? && Setting.plugin_mega_calendar['allowed_users'].include?(User.current.id.to_s) && Setting.try(:plugin_mega_calendar)[:calendar_active] ? true : false)
     if !right
       flash[:error] = translate 'no_right'
       redirect_to({:controller => :welcome})
@@ -231,8 +231,17 @@ class CalendarController < ApplicationController
         i.start_date = i.created_on
         i.due_date = i.created_on
       end
-      color = '#' + UserColor.where({:user_id => i.assigned_to_id}).first.color_code rescue def_color
+
+      trackers_to_color = [Setting.try(:plugin_mega_calendar)[:issue_to_color_1].to_i, Setting.try(:plugin_mega_calendar)[:issue_to_color_2].to_i]
+
+      if trackers_to_color.include? i.tracker_id
+        color = '#' + Setting.try(:plugin_mega_calendar)['issue_color_' + trackers_to_color.index(i.tracker_id).next.to_s].to_s
+      else
+        color = '#' + UserColor.where({:user_id => i.assigned_to_id}).first.color_code rescue def_color
+      end
+
       i_event = {:id => i.id.to_s, :controller_name => 'issue', :title => i.id.to_s + ' - ' + i.subject, :start => i.start_date.to_date.to_s + tbegin, :end => i.due_date.to_date.to_s + tend, :color => color, :url => Setting.plugin_mega_calendar['sub_path'] + 'issues/' + i.id.to_s, :className => css_classes, :description => form_issue(i) }
+      
       if tbegin.blank? || tend.blank?
         i_event[:allDay] = true
         if !i.due_date.blank? && tend.blank?

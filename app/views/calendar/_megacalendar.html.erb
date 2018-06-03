@@ -4,7 +4,7 @@
     js_user_query = session[:mega_calendar_js_user_query]
   else
     js_default_date = Date.today.to_s
-    js_user_query = true
+    js_user_query = false
   end
   if js_user_query.nil?
     js_user_query = true
@@ -46,7 +46,7 @@
 <center><div id='calendar'" style="<%= calendar_style %>"></div></center>
 
 <%
-  js_locale = User.current.language  rescue nil
+  js_locale = User.current.language.downcase  rescue nil
   if js_locale.blank?
     js_locale = Setting.default_language
   end
@@ -69,6 +69,8 @@
     $('#calendar').fullCalendar({
         lang: '<%= js_locale %>',
         defaultView: '<%= default_view %>',
+        nowIndicator: '<%= default_now_indicator %>',
+        navLinks: '<%= default_nav_links %>',
         height: <%= calendar_height %>,
         selectable: true,
         customButtons: {
@@ -93,7 +95,7 @@
         header: {
                         left: '<%= (show_view_buttons == false ? '' : 'prev,next today ') %>allTickets,myTickets',
                         center: 'title',
-                        right: '<%= (show_view_buttons == false ? '' : 'month,agendaWeek,agendaDay') %>'
+                        right: '<%= (show_view_buttons == false ? '' : 'month,agendaWeek,agendaDay,listWeek') %>'
                 },
         displayEventEnd: true,
         defaultDate: '<%= js_default_date %>',
@@ -140,12 +142,16 @@
       },
       select: function(start, end) {
         $('#calendar').fullCalendar('unselect');
-        if (<%= !Setting.plugin_mega_calendar.blank? %>){
-          window.open('<%= Setting.plugin_mega_calendar['sub_path'] %>issues/new?issue[project_id]=' + <%=Setting.plugin_mega_calendar['issue_open_as_project'].first %> + '&issue[start_date]='+start.format("YYYY-MM-DD")+'&issue[due_date]='+end.format("YYYY-MM-DD")+'&issue[time_begin]='+start.format("HH:mm")+'&issue[time_end]='+end.format("HH:mm"), '_blank');
-        }
-        else{
-          window.open('<%= Setting.plugin_mega_calendar['sub_path'] %>issues/new?issue[start_date]='+start.format("YYYY-MM-DD")+'&issue[due_date]='+end.format("YYYY-MM-DD")+'&issue[time_begin]='+start.format("HH:mm")+'&issue[time_end]='+end.format("HH:mm"), '_blank');
-        }
+
+        <%
+          if !Setting.try(:plugin_mega_calendar)[:issue_open_as_project].blank?
+            @include_project_id = 'issue[project_id]=' +Setting.try(:plugin_mega_calendar)[:issue_open_as_project] + '&'
+          else
+            @include_project_id = ''
+          end
+        %>
+
+        window.open('<%= Setting.plugin_mega_calendar['sub_path'] %>issues/new?<%= @include_project_id.html_safe %>issue[start_date]='+start.format("YYYY-MM-DD")+'&issue[due_date]='+end.format("YYYY-MM-DD")+'&issue[time_begin]='+start.format("HH:mm")+'&issue[time_end]='+end.format("HH:mm"), '_blank');
       },
     });
     set_active_button(user_query);
