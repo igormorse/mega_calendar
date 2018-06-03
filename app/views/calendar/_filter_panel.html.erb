@@ -54,14 +54,6 @@
   <tr>
     <td><%= translate 'use_saved_filter' %></td>
     <td style="padding-left: 10px;">
-      <% if false %>
-      <select id="sel_saved_filter" name="saved_filter">
-        <option value=""></option>
-        <% UserFilter.where(["user_filters.user_id = ? OR user_filters.user_id IS NULL",User.current.id]).each do |saved_filter| %>
-          <option value="<%= saved_filter.id %>"><%= saved_filter.filter_name %></option>
-        <% end %>
-      </select>
-      <% end %>
       
       <%= select_tag 'sel_saved_filter', options_from_collection_for_select(UserFilter.all,:id,:filter_name, Setting.try(:plugin_mega_calendar)[:calendar_default_filter]), :include_blank => true  %>
       
