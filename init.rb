@@ -3,9 +3,9 @@ require 'vpim'
 
 Redmine::Plugin.register :mega_calendar do
   name 'Mega Calendar plugin'
-  author 'Andreas Treubert'
+  author 'Andreas Treubert && Visagio'
   description 'Better calendar for redmine'
-  version '1.7.0'
+  version '2.0.0'
   url 'https://github.com/berti92/mega_calendar'
   author_url 'https://github.com/berti92'
   requires_redmine :version_or_higher => '3.0.1'
@@ -19,7 +19,14 @@ Redmine::Plugin.register :mega_calendar do
   end
 end
 
+require_dependency 'mega_calendar/hooks/issue_form_hook'
+
+# IssuesController.send(:include, MegaCalendar::Patches::IssuesControllerPatch) unless IssuesController.included_modules.include? MegaCalendar::Patches::IssuesControllerPatch
+# UsersController.send(:include, MegaCalendar::Patches::UsersControllerPatch) unless UsersController.included_modules.include? MegaCalendar::Patches::UsersControllerPatch
+Tracker.send(:include, MegaCalendar::Patches::TrackerPatch) unless Tracker.included_modules.include? MegaCalendar::Patches::TrackerPatch
+Issue.send(:include, MegaCalendar::Patches::IssuePatch) unless Issue.included_modules.include? MegaCalendar::Patches::IssuePatch
+
 Rails.configuration.to_prepare do
-  require_dependency File.join( File.dirname(File.realpath(__FILE__)), 'lib', 'users_controller_patch' )
-  require_dependency File.join( File.dirname(File.realpath(__FILE__)), 'lib', 'issues_controller_patch' )
+  require_dependency File.join( File.dirname(File.realpath(__FILE__)), 'lib/mega_calendar/patches', 'users_controller_patch' )
+  require_dependency File.join( File.dirname(File.realpath(__FILE__)), 'lib/mega_calendar/patches', 'issues_controller_patch' )
 end

@@ -17,6 +17,8 @@ pt-BR:
   save: "Salvar"
   list: "Lista"
   filter_name: "Nome do Filtro"
+  field_time_begin: Tempo de Início
+  field_time_end: Tempo de Término
   save_filter: "Salvar Filtro"
   global_filter: "Mostrar todos os Usuários"
   use_saved_filter: "Usar Filtro"
