@@ -1,6 +1,8 @@
 require 'filters.rb'
 require 'vpim'
 
+# Redmine::Plugin.requires_plugin('redmine_plugin_name')
+
 Redmine::Plugin.register :mega_calendar do
   name 'Mega Calendar plugin'
   author 'Andreas Treubert && Visagio'
@@ -20,10 +22,11 @@ Redmine::Plugin.register :mega_calendar do
 end
 
 require_dependency 'mega_calendar/hooks/issue_form_hook'
+# require_dependency 'mega_calendar/hooks/issue_show_hook'
 
 # IssuesController.send(:include, MegaCalendar::Patches::IssuesControllerPatch) unless IssuesController.included_modules.include? MegaCalendar::Patches::IssuesControllerPatch
 # UsersController.send(:include, MegaCalendar::Patches::UsersControllerPatch) unless UsersController.included_modules.include? MegaCalendar::Patches::UsersControllerPatch
-Tracker.send(:include, MegaCalendar::Patches::TrackerPatch) unless Tracker.included_modules.include? MegaCalendar::Patches::TrackerPatch
+# Tracker.send(:include, MegaCalendar::Patches::TrackerPatch) unless Tracker.included_modules.include? MegaCalendar::Patches::TrackerPatch
 Issue.send(:include, MegaCalendar::Patches::IssuePatch) unless Issue.included_modules.include? MegaCalendar::Patches::IssuePatch
 
 Rails.configuration.to_prepare do

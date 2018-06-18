@@ -1,4 +1,4 @@
-<% if @issue.core_field_enabled?('time_end') && !@issue.hidden_attribute?('time_end') %>
+<% if @issue.safe_attribute?('due_date') && @issue.core_field_enabled?('time_end') && !@issue.hidden_attribute?('time_end') %>
 
     <p id="time_end_label"><label><%= l(:field_time_end) %></label> 
         <input type="text" id="time_end" name="issue[time_end]" class="form-control clockpicker" value="<%= (!params[:issue].blank? && !params[:issue][:time_end].blank? ? params[:issue][:time_end].to_s : '') %>">
