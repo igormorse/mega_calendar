@@ -1,7 +1,10 @@
-<script type="text/javascript">
-  $('.clockpicker').clockpicker({
-    placement: 'top',
-    align: 'left',
-    donetext: 'Done'
-  });
-</script>
+
+<% if @issue.safe_attribute?('start_date') || @issue.safe_attribute?('due_date') %>
+  <script type="text/javascript">
+    $('.clockpicker').clockpicker({
+      placement: 'top',
+      align: 'left',
+      donetext: 'Done'
+    });
+  </script>
+<% end %>

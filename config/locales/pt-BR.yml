@@ -19,6 +19,7 @@ pt-BR:
   filter_name: "Nome do Filtro"
   field_time_begin: Tempo de Início
   field_time_end: Tempo de Término
+  placeholder_allday: Dia Inteiro
   save_filter: "Salvar Filtro"
   global_filter: "Mostrar todos os Usuários"
   use_saved_filter: "Usar Filtro"

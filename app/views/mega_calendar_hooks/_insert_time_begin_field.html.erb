@@ -1,7 +1,7 @@
-<% @issue.safe_attribute?('start_date') && if @issue.core_field_enabled?('time_begin') && !@issue.hidden_attribute?('time_begin') %>
+<% if @issue.safe_attribute?('start_date') %>
 
   <p id="time_begin_label"><label><%= l(:field_time_begin) %></label> 
-    <input type="text" id="time_begin" name="issue[time_begin]" class="form-control clockpicker" value="<%= (!params[:issue].blank? && !params[:issue][:time_begin].blank? ? params[:issue][:time_begin].to_s : '') %>">
+    <input type="text" id="time_begin" name="issue[time_begin]" class="form-control clockpicker" value="<%= (!params[:issue].blank? && !params[:issue][:time_begin].blank? ? params[:issue][:time_begin].to_s : '') %>" placeholder="<%=l(:placeholder_allday)%>">
   </p>
     <span class="input-group-addon">
       <span class="glyphicon glyphicon-time"></span>

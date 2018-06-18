@@ -3,7 +3,7 @@
   
     issue_fields_rows do |rows|
     
-        unless @issue.disabled_core_fields.include?('time_begin') || @issue.hidden_attribute?('time_begin')
+        unless @issue.disabled_core_fields.include?('start_date') || @issue.hidden_attribute?('start_date')
             tt = TicketTime.where({:issue_id => @issue.id}).first rescue nil
 
             if !tt.blank? && !tt.time_begin.blank?
@@ -13,7 +13,7 @@
             end
         end
 
-        unless @issue.disabled_core_fields.include?('time_end') || @issue.hidden_attribute?('time_end')
+        unless @issue.disabled_core_fields.include?('due_date') || @issue.hidden_attribute?('due_date')
             tt = TicketTime.where({:issue_id => @issue.id}).first rescue nil
 
             if !tt.blank? && !tt.time_begin.blank?
