@@ -54,12 +54,7 @@
   <tr>
     <td><%= translate 'use_saved_filter' %></td>
     <td style="padding-left: 10px;">
-      
       <%= select_tag 'sel_saved_filter', options_from_collection_for_select(UserFilter.all,:id,:filter_name, Setting.try(:plugin_mega_calendar)[:calendar_default_filter]), :include_blank => true  %>
-      
-      <% if !Setting.try(:plugin_mega_calendar)[:calendar_default_filter].blank? %>
-        <script>use_saved_filter($('#sel_saved_filter').val());</script>
-      <% end %>
     </td>
   </tr>
 </table>
@@ -94,4 +89,9 @@
       $('#calendar').fullCalendar( 'refetchEvents' );
     });
   }
+
+  if ('<%= Setting.try(:plugin_mega_calendar)[:calendar_default_filter].present? %>'){
+    use_saved_filter('<%= Setting.try(:plugin_mega_calendar)[:calendar_default_filter] %>')
+  }
+
 </script>
