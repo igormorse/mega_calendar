@@ -83,15 +83,17 @@
     <tr>
       <th><%= translate 'allowed_users' %></th>
       <td>
-        <select id="settings_allowed_users" value="<%= settings['allowed_users'] %>" name="settings[allowed_users][]" multiple>
-          <% User.where(["users.login IS NOT NULL AND users.login <> ''"]).order("users.login ASC").each do |u| %>
-            <option value="<%= u.id.to_s %>" <%= (!Setting.plugin_mega_calendar['allowed_users'].blank? && Setting.plugin_mega_calendar['allowed_users'].include?(u.id.to_s) ? 'selected' : '') %>><%= u.login.to_s %></option>
-          <% end %>
-        </select>
+        <%= select_tag 'settings[allowed_users]', options_from_collection_for_select(User.all,:id,:name, settings['allowed_users']), :include_blank => true, :multiple=> true  %>
       </td>
     </tr>
     <tr>
-      <th><%= translate 'displayed_within_calendar' %></th>
+      <th><%= t(:allowed_groups) %></th>
+      <td>
+        <%= select_tag 'settings[allowed_groups]', options_from_collection_for_select(Group.all,:id,:name, settings['allowed_groups']), :include_blank => true, :multiple=> true  %>
+      </td>
+    </tr>
+    <tr>
+      <th><%= t(:displayed_within_calendar) %></th>
       <td>
         <input onclick="show_user_group_select('users');" type="radio" name="settings[displayed_type]" value="users" <%= (!Setting.plugin_mega_calendar['displayed_type'].blank? && Setting.plugin_mega_calendar['displayed_type'] == 'users' ? 'checked' : '') %>> <%= translate 'field_user' %><br>
         <input onclick="show_user_group_select('groups');" type="radio" name="settings[displayed_type]" value="groups" <%= (!Setting.plugin_mega_calendar['displayed_type'].blank? && Setting.plugin_mega_calendar['displayed_type'] == 'groups' ? 'checked' : '') %>> <%= translate 'label_group' %><br>
@@ -118,13 +120,13 @@
       </td>
     </tr>
     <tr>
-      <th><%= t('issue_open_as_project') %>:</th>
+      <th><%= t(:issue_open_as_project) %>:</th>
       <td>
         <%= select_tag 'settings[issue_open_as_project]', options_from_collection_for_select(Project.all,:id,:name, settings['issue_open_as_project']), :include_blank => true  %>
       </td>
     </tr>
     <tr>
-      <th><%= t('calendar_default_filter') %>:</th>
+      <th><%= t(:calendar_default_filter) %>:</th>
       <td>
         <%= select_tag 'settings[calendar_default_filter]', options_from_collection_for_select(UserFilter.all,:id,:filter_name, settings['calendar_default_filter']), :include_blank => true  %>
       </td>

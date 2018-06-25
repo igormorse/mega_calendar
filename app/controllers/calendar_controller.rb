@@ -4,7 +4,7 @@ class CalendarController < ApplicationController
   before_filter(:check_plugin_right)
 
   def check_plugin_right
-    right = (!Setting.plugin_mega_calendar['allowed_users'].blank? && Setting.plugin_mega_calendar['allowed_users'].include?(User.current.id.to_s) && Setting.try(:plugin_mega_calendar)[:calendar_active] ? true : false)
+    right = (Setting.try(:plugin_mega_calendar)[:calendar_active] == "true" && ((!Setting.try(:plugin_mega_calendar)[:allowed_users].blank? && Setting.try(:plugin_mega_calendar)[:allowed_users].include?(User.current.id.to_s)) || (!Setting.try(:plugin_mega_calendar)[:allowed_groups].blank? && User.current.groups.collect{|group| Setting.try(:plugin_mega_calendar)[:allowed_groups].include?(group.id.to_s)}.include?(true))))
     if !right
       flash[:error] = translate 'no_right'
       redirect_to({:controller => :welcome})

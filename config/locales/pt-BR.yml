@@ -37,6 +37,7 @@ pt-BR:
   sub_path: "Subcaminho para a URL"
   no_right: "Você não tem as Permissões necessárias para Visualizar essa seção!"
   allowed_users: "Usuários permitidos"
+  allowed_groups: "Grupos permitidos"
   day0: "Domingo"
   day1: "Segunda"
   day2: "Terça"
