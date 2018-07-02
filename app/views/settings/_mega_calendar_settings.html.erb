@@ -94,7 +94,13 @@
     <tr>
       <th><%= translate 'calendar_default_view' %></th>
       <td>
-        <%= select_tag 'settings[calendar_default_view]', options_for_select([[t('day'), 'agendaDay'], [t('week'), 'agendaWeek'], [t('month'), 'month']], settings['calendar_default_view'].blank? ? 'week' : settings['calendar_default_view']) %>  
+        <%= select_tag 'settings[calendar_default_view]', options_for_select([[t('day'), 'agendaDay'], [t('week'), 'agendaWeek'], [t('month'), 'month']], settings['calendar_default_view']) %>  
+      </td>
+    </tr>
+    <tr>
+      <th><%= t(:calendar_default_buttons) %></th>
+      <td>
+        <%= select_tag 'settings[calendar_default_buttons]', options_for_select([[t('all_issues'), 'allTickets'], [t('my_issues'), 'myTickets'], [t('refresh'), 'refresh']], settings['calendar_default_buttons'].blank? ? ['allTickets', 'myTickets', 'refresh'] : settings['calendar_default_buttons']), :include_blank => true, :multiple => true %>  
       </td>
     </tr>
     <tr>

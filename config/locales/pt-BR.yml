@@ -4,6 +4,7 @@ pt-BR:
   holiday:  "Feriado"
   my_issues: "Meus Chamados"
   all_issues: "Todos os Chamados"
+  refresh: "Atualizar"
   user: "Usuário"
   start: "Começo"
   end: "Fim"

@@ -14,7 +14,8 @@
   :default_nav_links => (Setting.try(:plugin_mega_calendar)[:default_nav_links].blank? ? true : Setting.try(:plugin_mega_calendar)[:default_nav_links] rescue true),
   :default_min_time => (Setting.try(:plugin_mega_calendar)[:default_min_time].blank? ? '00:00' : Setting.try(:plugin_mega_calendar)[:default_min_time] rescue '00:00'),
   :default_max_time => (Setting.try(:plugin_mega_calendar)[:default_max_time].blank? ? '23:00' : Setting.try(:plugin_mega_calendar)[:default_max_time] rescue '23:00'),
-  :editable => (User.current.groups.collect{|group| Setting.try(:plugin_mega_calendar)[:management_groups].include?(group.id.to_s)}.include?(true) rescue false)
+  :editable => (User.current.groups.collect{|group| Setting.try(:plugin_mega_calendar)[:management_groups].include?(group.id.to_s)}.include?(true) rescue false),
+  :default_buttons => (Setting.try(:plugin_mega_calendar)[:calendar_default_buttons].nil? ? [] : Setting.try(:plugin_mega_calendar)[:calendar_default_buttons])
 }
 %>
 

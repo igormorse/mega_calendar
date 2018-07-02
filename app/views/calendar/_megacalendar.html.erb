@@ -78,10 +78,10 @@
         minTime: '<%= default_min_time %>',
         maxTime: '<%= default_max_time %>',
         height: 'auto',
-        selectable: true,
+        selectable: '<%= editable %>' == 'true',
         customButtons: {
                 myTickets: {
-                        text: '<%= translate 'my_issues' %>',
+                        text: '<%= t(:my_issues) %>',
                         click: function() {
                           user_query = true;
                           set_active_button(user_query);
@@ -89,17 +89,23 @@
                         }
                 },
                 allTickets: {
-                        text: '<%= translate 'all_issues' %>',
+                        text: '<%= t(:all_issues) %>',
                         click: function() {
                           user_query = false;
                           set_active_button(user_query);
                           $('#calendar').fullCalendar( 'refetchEvents' );
                         }
+                },
+                refresh: {
+                  text: '<%= t(:refresh) %>',
+                  click: function(){
+                    $('#calendar').fullCalendar('refetchEvents');
+                  }
                 }
 
         },
         header: {
-                        left: '<%= (show_view_buttons == false ? '' : 'prev,next today ') %>allTickets,myTickets',
+                        left: '<%= (show_view_buttons == false ? '' : 'prev,next today ' + default_buttons.join(',')) %>',
                         center: 'title',
                         right: '<%= (show_view_buttons == false ? '' : 'month,agendaWeek,agendaDay,listWeek') %>'
                 },
