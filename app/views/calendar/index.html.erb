@@ -5,7 +5,18 @@
   end
 %>
 
-<%= render :partial => 'calendar/megacalendar', :locals => {:show_view_buttons => true, :default_view => Setting.try(:plugin_mega_calendar)[:calendar_default_view].blank? ? 'agendaWeek' : Setting.try(:plugin_mega_calendar)[:calendar_default_view], :use_values_from_session => false, :calendar_height => '700', :calendar_style => 'padding: 0px 100px;', :default_now_indicator => Setting.try(:plugin_mega_calendar)[:default_now_indicator].blank? ? false : Setting.try(:plugin_mega_calendar)[:default_now_indicator], :default_nav_links => Setting.try(:plugin_mega_calendar)[:default_nav_links].blank? ? true : Setting.try(:plugin_mega_calendar)[:default_nav_links]} %>
+<%= render :partial => 'calendar/megacalendar', :locals => {
+  :show_view_buttons => true, 
+  :calendar_style => 'padding: 0px 100px;', 
+  :default_view => (Setting.try(:plugin_mega_calendar)[:calendar_default_view].blank? ? 'agendaWeek' : Setting.try(:plugin_mega_calendar)[:calendar_default_view] rescue 'agendaWeek'), 
+  :use_values_from_session => false, 
+  :default_now_indicator => (Setting.try(:plugin_mega_calendar)[:default_now_indicator].blank? ? false : Setting.try(:plugin_mega_calendar)[:default_now_indicator] rescue false), 
+  :default_nav_links => (Setting.try(:plugin_mega_calendar)[:default_nav_links].blank? ? true : Setting.try(:plugin_mega_calendar)[:default_nav_links] rescue true),
+  :default_min_time => (Setting.try(:plugin_mega_calendar)[:default_min_time].blank? ? '00:00' : Setting.try(:plugin_mega_calendar)[:default_min_time] rescue '00:00'),
+  :default_max_time => (Setting.try(:plugin_mega_calendar)[:default_max_time].blank? ? '23:00' : Setting.try(:plugin_mega_calendar)[:default_max_time] rescue '23:00'),
+  :editable => (User.current.groups.collect{|group| Setting.try(:plugin_mega_calendar)[:management_groups].include?(group.id.to_s)}.include?(true) rescue false)
+}
+%>
 
 <link rel='stylesheet' href='<%= Setting.plugin_mega_calendar['sub_path'] %>plugin_assets/mega_calendar/javascripts/datetimepicker/jquery.datetimepicker.css' />
 <script src='<%= Setting.plugin_mega_calendar['sub_path'] %>plugin_assets/mega_calendar/javascripts/datetimepicker/build/jquery.datetimepicker.full.min.js'></script>

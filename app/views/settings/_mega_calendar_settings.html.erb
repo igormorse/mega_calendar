@@ -1,7 +1,8 @@
 <script src='<%= Setting.plugin_mega_calendar['sub_path'] %>plugin_assets/mega_calendar/javascripts/jscolor/jscolor.js'></script>
+<%= javascript_include_tag('clockpicker/jquery-clockpicker.min.js', plugin: 'mega_calendar') %>
+
 <table>
   <tbody>
-
     <tr>
       <th><%= t('calendar_active') %>:</th>
       <td>
@@ -15,14 +16,30 @@
         <%= check_box_tag 'settings[calendar_now_indicator]', false, settings['calendar_now_indicator']  %>
       </td>
     </tr>
-
     <tr>
       <th><%= t('calendar_nav_links') %>:</th>
       <td>
         <%= check_box_tag 'settings[calendar_nav_links]', true, settings['calendar_nav_links']  %>
       </td>
     </tr>
-
+    <tr>
+    <th><%= t(:calendar_min_time) %>:</th>
+      <td>
+        <input type="text" id="settings_default_min_time" name="settings[default_min_time]" class="form-control clockpicker" value="<%= settings.key?(:default_min_time) ? settings['default_min_time'] : '00:00' %>" placeholder="<%=l(:placeholder_allday)%>">
+        <span class="input-group-addon">
+          <span class="glyphicon glyphicon-time"></span>
+        </span>
+      </td>
+    </tr>
+     <tr>
+    <th><%= t(:calendar_max_time) %>:</th>
+      <td>
+        <input type="text" id="settings_default_max_time" name="settings[default_max_time]" class="form-control clockpicker" value="<%= settings.key?(:default_max_time) ? settings['default_max_time'] : '23:00' %>" placeholder="<%=l(:placeholder_allday)%>">
+        <span class="input-group-addon">
+          <span class="glyphicon glyphicon-time"></span>
+        </span>
+      </td>
+    </tr>
     <tr>
       <th><%= translate 'def_holiday_color' %></th>
       <td>
@@ -92,6 +109,12 @@
         <%= select_tag 'settings[allowed_groups]', options_from_collection_for_select(Group.all,:id,:name, settings['allowed_groups']), :include_blank => true, :multiple=> true  %>
       </td>
     </tr>
+        <tr>
+      <th><%= t(:management_groups) %></th>
+      <td>
+        <%= select_tag 'settings[management_groups]', options_from_collection_for_select(Group.all,:id,:name, settings['management_groups']), :include_blank => true, :multiple=> true  %>
+      </td>
+    </tr>
     <tr>
       <th><%= t(:displayed_within_calendar) %></th>
       <td>
@@ -126,6 +149,24 @@
       </td>
     </tr>
     <tr>
+      <th><%= t(:time_begin_custom_field) %>:</th>
+      <td>
+        <%= select_tag 'settings[time_begin_custom_field]', options_from_collection_for_select(settings['issue_open_as_project'].present? ? Project.find(settings['issue_open_as_project']).issue_custom_fields : [],:id,:name, settings['time_begin_custom_field']), :include_blank => true  %>
+      </td>
+    </tr>
+    <tr>
+      <th><%= t(:time_end_custom_field) %>:</th>
+      <td>
+        <%= select_tag 'settings[time_end_custom_field]', options_from_collection_for_select(settings['issue_open_as_project'].present? ? Project.find(settings['issue_open_as_project']).issue_custom_fields : [],:id,:name, settings['time_end_custom_field']), :include_blank => true  %>
+      </td>
+    </tr>
+    <tr>
+      <th><%= t(:custom_fields_calendar_tip_info) %>:</th>
+      <td>
+        <%= select_tag 'settings[custom_fields_calendar_info]', options_from_collection_for_select(settings['issue_open_as_project'].present? ? Project.find(settings['issue_open_as_project']).issue_custom_fields : [],:id,:name, settings['custom_fields_calendar_info']), :include_blank => true, :multiple => true  %>
+      </td>
+    </tr>
+    <tr>
       <th><%= t(:calendar_default_filter) %>:</th>
       <td>
         <%= select_tag 'settings[calendar_default_filter]', options_from_collection_for_select(UserFilter.all,:id,:filter_name, settings['calendar_default_filter']), :include_blank => true  %>
@@ -133,6 +174,15 @@
     </tr>
   </tbody>
 </table>
+
+<script type="text/javascript">
+  $('.clockpicker').clockpicker({
+    placement: 'top',
+    align: 'left',
+    donetext: '<%= t(:clockpicker_done_text) %>'
+  });
+</script>
+
 <script type="text/javascript">
   function show_user_group_select(type) {
     if(type === 'users') {
@@ -149,5 +199,13 @@
   }
   $(function() {
     show_user_group_select('<%= Setting.plugin_mega_calendar['displayed_type'] %>');
+  });
+</script>
+
+<script type="text/javascript">
+  $('.clockpicker').clockpicker({
+    placement: 'top',
+    align: 'left',
+    donetext: 'Done'
   });
 </script>

@@ -24,23 +24,26 @@
 <script src='<%= Setting.plugin_mega_calendar['sub_path'] %>plugin_assets/mega_calendar/javascripts/qtip2/jquery.qtip.min.js'></script>
 <script src='<%= Setting.plugin_mega_calendar['sub_path'] %>plugin_assets/mega_calendar/javascripts/fullcalendar/locale-all.js'></script>
 <script src='<%= Setting.plugin_mega_calendar['sub_path'] %>plugin_assets/mega_calendar/javascripts/jquery-serialize-object.min.js'></script>
-<style>
-.calendar_event {
-  pointer:cursor !important;
-  color:#000000 !important;
-}
 
-.calendar_event_closed {
-  text-decoration: line-through !important;
-  opacity: 0.6 !important;
-}
-@media screen and (max-width: 900px) {
-  #calendar {
-    padding-left: 5px !important;
-    padding-right: 5px !important;
+<style>
+
+  .calendar_event {
+    pointer:cursor !important;
+    color:#000000 !important;
   }
-}
+
+  .calendar_event_closed {
+    text-decoration: line-through !important;
+    opacity: 0.6 !important;
+  }
+  @media screen and (max-width: 900px) {
+    #calendar {
+      padding-left: 5px !important;
+      padding-right: 5px !important;
+    }
+  }
 </style>
+
 <h2><%= l(:calendar) %></h2>
 <%= render :partial => 'calendar/filter_panel', :locals => {} %>
 <center><div id=calendar style="<%= calendar_style %>"></div></center>
@@ -65,13 +68,16 @@
       btn_alltickets.addClass('fc-state-active');
     }
   }
+  
   $(document).ready(function() {
     $('#calendar').fullCalendar({
         locale: '<%= js_locale %>',
         defaultView: '<%= default_view %>',
         nowIndicator: '<%= default_now_indicator %>',
         navLinks: '<%= default_nav_links %>',
-        height: '<%= calendar_height %>',
+        minTime: '<%= default_min_time %>',
+        maxTime: '<%= default_max_time %>',
+        height: 'auto',
         selectable: true,
         customButtons: {
                 myTickets: {
@@ -122,7 +128,7 @@
           element.qtip({ content: event.description, position: { target: 'mouse', adjust: { x: 5, y: 5}} });
       },
       eventLimit: true,
-      editable: true,
+      editable: '<%= editable %>' == 'true',
       eventDrop: function(event, delta, revertFunc) {
         if(!confirm("<%= (translate 'save_question') %>")) {
           revertFunc();

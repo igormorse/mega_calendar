@@ -4,7 +4,7 @@ class CalendarController < ApplicationController
   before_filter(:check_plugin_right)
 
   def check_plugin_right
-    right = (Setting.try(:plugin_mega_calendar)[:calendar_active] == "true" && ((!Setting.try(:plugin_mega_calendar)[:allowed_users].blank? && Setting.try(:plugin_mega_calendar)[:allowed_users].include?(User.current.id.to_s)) || (!Setting.try(:plugin_mega_calendar)[:allowed_groups].blank? && User.current.groups.collect{|group| Setting.try(:plugin_mega_calendar)[:allowed_groups].include?(group.id.to_s)}.include?(true))))
+    right = (Setting.try(:plugin_mega_calendar)[:calendar_active] == "true" && ((!Setting.try(:plugin_mega_calendar)[:allowed_users].blank? && Setting.try(:plugin_mega_calendar)[:allowed_users].include?(User.current.id.to_s)) || (!Setting.try(:plugin_mega_calendar)[:allowed_groups].blank? && User.current.groups.collect{|group| Setting.try(:plugin_mega_calendar)[:allowed_groups].include?(group.id.to_s)}.include?(true))) rescue false)
     if !right
       flash[:error] = translate 'no_right'
       redirect_to({:controller => :welcome})
@@ -156,7 +156,7 @@ class CalendarController < ApplicationController
     ret_var << '</tr>'
     ret_var << '<tr>'
     ret_var << '<td>' + (translate 'user') + '</td>'
-    ret_var << '<td>' + issue.assigned_to.login + '</td>' rescue '<td></td>'
+    ret_var << '<td>' + issue.author.name + '</td>' rescue '<td></td>'
     ret_var << '</tr>'
     ret_var << '<tr>'
     ret_var << '<td>' + (translate 'start') + '</td>'
@@ -166,7 +166,30 @@ class CalendarController < ApplicationController
     ret_var << '<td>' + (translate 'end') + '</td>'
     ret_var << '<td>' + issue.due_date.to_date.to_s + ' ' + tend + ' </td>' rescue '<td></td>'
     ret_var << '</tr>'
+
+    if (Setting.try(:plugin_mega_calendar).key?(:custom_fields_calendar_info) && Setting.try(:plugin_mega_calendar)[:custom_fields_calendar_info].present?)
+      selected_custom_fields = Setting.try(:plugin_mega_calendar)['custom_fields_calendar_info']
+
+      issue.custom_field_values.each{|field| 
+        
+        if (selected_custom_fields.include?(field.custom_field_id.to_s) && field.value.present?)
+
+          possible_values = field.custom_field.possible_values_options
+
+          value = possible_values.collect{|value| (value[1] == field.value) ? value[0] : []}
+
+          value = value[0]
+
+          ret_var << '<tr>'
+          ret_var << '<td>' + field.custom_field.name + '<td>'
+          ret_var << '<td>'  + (value.present? ? value : field.value) + '</td>' rescue '<td></td>'
+          ret_var << '</tr>' 
+        end
+      }
+    end
+
     ret_var << '</table>'
+
     return ret_var
   end
   def get_events
