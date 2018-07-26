@@ -130,8 +130,28 @@
             }
         });
       },
-      eventRender: function(event, element) {
-          element.qtip({ content: event.description, position: { target: 'mouse', adjust: { x: 5, y: 5}} });
+      eventRender: function(event, element, view) {
+          element.qtip({ 
+            content: event.description, 
+            position: { 
+                target: 'mouse',
+                my: 'bottom left', 
+                adjust: { 
+                  x: 5,
+                  y: 5
+                }
+              } 
+            });
+          if (view.type == 'listWeek') {
+            var toInject = [];
+            toInject.push(event.status);
+            for (var i = 0; i < 1; i++) {	               
+                element.append('<td class="fc-list-item-title fc-widget-content">' + toInject[0] + '</td>');
+            }          
+          }
+      },
+      resourceRender: function(resourceObj, labelTds, bodyTds) {
+        labelTds.eq(0).find('.fc-widget-header');
       },
       eventLimit: true,
       editable: '<%= editable %>' == 'true',
