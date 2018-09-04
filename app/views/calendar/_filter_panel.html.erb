@@ -1,3 +1,12 @@
+<style>
+
+  .btn-disabled[disabled] {
+    opacity: .4;
+    cursor: default !important;
+    pointer-events: none;
+  }
+</style>
+
 <form id="calendar_filter">
 <fieldset id="filters" class="collapsible  collapsed" style="padding-bottom: 20px;">
   <legend onclick="toggleFieldset(this);"><%= translate 'description_filter' %></legend>
@@ -55,10 +64,15 @@
     <td><%= translate 'use_saved_filter' %></td>
     <td style="padding-left: 10px;">
       <%= select_tag 'sel_saved_filter', options_from_collection_for_select(UserFilter.all,:id,:filter_name, Setting.try(:plugin_mega_calendar)[:calendar_default_filter]), :include_blank => true  %>
+
+      <% if User.current.admin %>
+        <a href="#" class="icon icon-del btn-disabled" onclick="window.location = '<%= Setting.plugin_mega_calendar['sub_path'] %>calendar/destroy_filter?id='+$('#sel_saved_filter').val();"><%= translate 'button_delete' %></a>
+      <% else %>
+        <a href="#" class="icon icon-del btn-disabled" disabled onclick="window.location = '<%= Setting.plugin_mega_calendar['sub_path'] %>calendar/destroy_filter?id='+$('#sel_saved_filter').val();"><%= translate 'button_delete' %></a>
+      <% end %>
     </td>
   </tr>
 </table>
-<a href="#" class="icon icon-checked" onclick="use_saved_filter($('#sel_saved_filter').val());"><%= translate 'button_update' %></a>&nbsp;<a href="#" class="icon icon-del" onclick="window.location = '<%= Setting.plugin_mega_calendar['sub_path'] %>calendar/destroy_filter?id='+$('#sel_saved_filter').val();"><%= translate 'button_delete' %></a>
 
 <script type="text/javascript">
   function reset_and_reload_filters() {

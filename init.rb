@@ -8,7 +8,7 @@ Redmine::Plugin.register :mega_calendar do
   author 'Andreas Treubert && Visagio'
   description 'Better calendar for redmine'
   version '2.0.0'
-  url 'https://github.com/berti92/mega_calendar'
+  url 'https://github.com/igormorse/mega_calendar'
   author_url 'https://github.com/berti92'
   requires_redmine :version_or_higher => '3.0.1'
 
@@ -29,9 +29,13 @@ Redmine::Plugin.register :mega_calendar do
       'calendar_default_buttons' => ['allTickets', 'myTickets', 'refresh'],
       :partial => 'settings/mega_calendar_settings'
   end
+
+  Issue.send(:include, MegaCalendar::Patches::IssuePatch) unless Issue.included_modules.include? MegaCalendar::Patches::IssuePatch
+  IssuesController.send(:include, MegaCalendar::Patches::IssuesControllerPatch) unless IssuesController.included_modules.include? MegaCalendar::Patches::IssuesControllerPatch
+  UsersController.send(:include, MegaCalendar::Patches::UsersControllerPatch) unless UsersController.included_modules.include? MegaCalendar::Patches::UsersControllerPatch
 end
 
-require_dependency 'mega_calendar/hooks/issue_form_hook'
+# require_dependency 'mega_calendar/hooks/issue_form_hook'
 # require_dependency 'mega_calendar/hooks/issue_show_hook'
 
 # IssuesController.send(:include, MegaCalendar::Patches::IssuesControllerPatch) unless IssuesController.included_modules.include? MegaCalendar::Patches::IssuesControllerPatch
@@ -39,7 +43,7 @@ require_dependency 'mega_calendar/hooks/issue_form_hook'
 # Tracker.send(:include, MegaCalendar::Patches::TrackerPatch) unless Tracker.included_modules.include? MegaCalendar::Patches::TrackerPatch
 # Issue.send(:include, MegaCalendar::Patches::IssuePatch) unless Issue.included_modules.include? MegaCalendar::Patches::IssuePatch
 
-Rails.configuration.to_prepare do
-  require_dependency File.join( File.dirname(File.realpath(__FILE__)), 'lib/mega_calendar/patches', 'users_controller_patch' )
-  require_dependency File.join( File.dirname(File.realpath(__FILE__)), 'lib/mega_calendar/patches', 'issues_controller_patch' )
-end
+# Rails.configuration.to_prepare do
+#   require_dependency File.join( File.dirname(File.realpath(__FILE__)), 'lib/mega_calendar/patches', 'users_controller_patch' )
+#   require_dependency File.join( File.dirname(File.realpath(__FILE__)), 'lib/mega_calendar/patches', 'issues_controller_patch' )
+# end
