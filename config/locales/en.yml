@@ -17,8 +17,6 @@ en:
   save: "Save"
   list: "List"
   filter_name: "Filter name"
-  field_time_begin: Time Begin
-  field_time_end: Time End
   save_filter: "Save filter"
   global_filter: "Display to all users"
   use_saved_filter: "Use filter"

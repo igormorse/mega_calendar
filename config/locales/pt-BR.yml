@@ -18,8 +18,6 @@ pt-BR:
   save: "Salvar"
   list: "Lista"
   filter_name: "Nome do Filtro"
-  field_time_begin: Tempo de Início
-  field_time_end: Tempo de Término
   placeholder_allday: Dia Inteiro
   save_filter: "Salvar Filtro"
   global_filter: "Mostrar todos os Usuários"
@@ -39,7 +37,6 @@ pt-BR:
   no_right: "Você não tem as Permissões necessárias para Visualizar essa seção!"
   allowed_users: "Usuários permitidos"
   allowed_groups: "Grupos permitidos"
-  clockpicker_done_text: "Aplicar"
   day0: "Domingo"
   day1: "Segunda"
   day2: "Terça"

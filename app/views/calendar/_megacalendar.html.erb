@@ -177,14 +177,29 @@
         $('#calendar').fullCalendar('unselect');
 
         <%
-          if !Setting.try(:plugin_mega_calendar)[:issue_open_as_project].blank?
-            @include_project_id = 'issue[project_id]=' +Setting.try(:plugin_mega_calendar)[:issue_open_as_project] + '&'
-          else
-            @include_project_id = ''
-          end
+          # Refactor everything below to something more prettier...
+
+          @include_project_id = "issue[project_id]=#{Setting.try(:plugin_mega_calendar)[:issue_open_as_project]}" rescue ''
+    
+          @include_time_begin_cf_value = "&issue[custom_field_values][#{Setting.try(:plugin_mega_calendar)[:time_begin_custom_field].to_s}]" rescue ''
+
+          @include_time_end_cf_value = "&issue[custom_field_values][#{Setting.try(:plugin_mega_calendar)[:time_end_custom_field].to_s}]" rescue ''
         %>
 
-        window.open('<%= Setting.plugin_mega_calendar['sub_path'] %>issues/new?<%= @include_project_id.html_safe %>issue[start_date]='+start.format("YYYY-MM-DD")+'&issue[due_date]='+end.format("YYYY-MM-DD")+'&issue[time_begin]='+start.format("HH:mm")+'&issue[time_end]='+end.format("HH:mm"), '_blank');
+        if ('<%= @include_time_begin_cf_value.present? %>' == 'true')
+          timeBegin = '<%= "#{@include_time_begin_cf_value}=".html_safe %>' + start.format("HH:mm");
+        else
+          timeBegin = '';
+
+        if ('<%= @include_time_end_cf_value.present? %>' == 'true')
+          timeEnd = '<%= "#{@include_time_end_cf_value.html_safe}=".html_safe %>' + end.format("HH:mm");
+        else
+          timeEnd = '';
+
+        issueUrl = '<%= "#{Setting.plugin_mega_calendar['sub_path']}issues/new?#{@include_project_id.html_safe}" %>&issue[start_date]='+start.format("YYYY-MM-DD")+'&issue[due_date]='+end.format("YYYY-MM-DD")+timeBegin+timeEnd;
+
+        // window.open('<%= Setting.plugin_mega_calendar['sub_path'] %>issues/new?<%= @include_project_id.html_safe %>issue[start_date]='+start.format("YYYY-MM-DD")+'&issue[due_date]='+end.format("YYYY-MM-DD")+'<%= @include_time_begin_cf_value %>'+start.format("HH:mm")+'<%= @include_time_end_cf_value %>'+end.format("HH:mm"), '_blank');
+        window.open(issueUrl);
       },
     });
     set_active_button(user_query);

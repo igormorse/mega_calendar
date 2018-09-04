@@ -34,16 +34,3 @@ Redmine::Plugin.register :mega_calendar do
   IssuesController.send(:include, MegaCalendar::Patches::IssuesControllerPatch) unless IssuesController.included_modules.include? MegaCalendar::Patches::IssuesControllerPatch
   UsersController.send(:include, MegaCalendar::Patches::UsersControllerPatch) unless UsersController.included_modules.include? MegaCalendar::Patches::UsersControllerPatch
 end
-
-# require_dependency 'mega_calendar/hooks/issue_form_hook'
-# require_dependency 'mega_calendar/hooks/issue_show_hook'
-
-# IssuesController.send(:include, MegaCalendar::Patches::IssuesControllerPatch) unless IssuesController.included_modules.include? MegaCalendar::Patches::IssuesControllerPatch
-# UsersController.send(:include, MegaCalendar::Patches::UsersControllerPatch) unless UsersController.included_modules.include? MegaCalendar::Patches::UsersControllerPatch
-# Tracker.send(:include, MegaCalendar::Patches::TrackerPatch) unless Tracker.included_modules.include? MegaCalendar::Patches::TrackerPatch
-# Issue.send(:include, MegaCalendar::Patches::IssuePatch) unless Issue.included_modules.include? MegaCalendar::Patches::IssuePatch
-
-# Rails.configuration.to_prepare do
-#   require_dependency File.join( File.dirname(File.realpath(__FILE__)), 'lib/mega_calendar/patches', 'users_controller_patch' )
-#   require_dependency File.join( File.dirname(File.realpath(__FILE__)), 'lib/mega_calendar/patches', 'issues_controller_patch' )
-# end
