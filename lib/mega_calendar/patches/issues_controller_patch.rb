@@ -18,18 +18,24 @@ module MegaCalendar
                 
                 due_date = params[:issue][:due_date].blank? ? start_date : params[:issue][:due_date] if params[:issue][:due_date].blank?
 
-                tbegin = (!params[:issue][:custom_field_values].key?(time_begin_cf) || params[:issue][:custom_field_values][time_begin_cf].blank?) ? (Setting.try(:plugin_mega_calendar)[:default_min_time] rescue '00:00') : params[:issue][:custom_field_values][time_begin_cf]
-                tend = (!params[:issue][:custom_field_values].key?(time_end_cf) || params[:issue][:custom_field_values][time_end_cf].blank?) ? (Setting.try(:plugin_mega_calendar)[:default_max_time] rescue '23:00') : params[:issue][:custom_field_values][time_end_cf]
+                timeBeginNotExists = !params[:issue][:custom_field_values].key?(time_begin_cf) || params[:issue][:custom_field_values][time_begin_cf].blank?
+                timeEndNotExists = !params[:issue][:custom_field_values].key?(time_end_cf) || params[:issue][:custom_field_values][time_end_cf].blank?
 
-                time_begin = start_date.to_s + ' ' + tbegin
-                time_end = due_date.to_s + ' ' + tend
+                if (!timeBeginNotExists || !timeEndNotExists)
 
-                time_fields_cv = @issue.custom_values.where(:custom_field_id => [time_begin_cf.to_i, time_end_cf.to_i])
+                  tbegin = (timeBeginNotExists) ? (Setting.try(:plugin_mega_calendar)[:default_min_time] rescue '00:00') : params[:issue][:custom_field_values][time_begin_cf]
+                  tend = (timeEndNotExists) ? (Setting.try(:plugin_mega_calendar)[:default_max_time] rescue '23:00') : params[:issue][:custom_field_values][time_end_cf]
 
-                time_begin_cv_id = time_fields_cv[0].id rescue nil
-                time_end_cv_id = time_fields_cv[1].id rescue nil
+                  time_begin = start_date.to_s + ' ' + tbegin
+                  time_end = due_date.to_s + ' ' + tend
 
-                TicketTime.create({:issue_id => @issue.id, :time_begin => time_begin, :time_end => time_end, :time_begin_custom_value_id => time_begin_cv_id, :time_end_custom_value_id => time_end_cv_id}) rescue nil
+                  time_fields_cv = @issue.custom_values.where(:custom_field_id => [time_begin_cf.to_i, time_end_cf.to_i])
+
+                  time_begin_cv_id = time_fields_cv[0].id rescue nil
+                  time_end_cv_id = time_fields_cv[1].id rescue nil
+
+                  TicketTime.create({:issue_id => @issue.id, :time_begin => time_begin, :time_end => time_end, :time_begin_custom_value_id => time_begin_cv_id, :time_end_custom_value_id => time_end_cv_id}) rescue nil
+                end
               end
             end
           end
@@ -46,11 +52,21 @@ module MegaCalendar
                 
                 due_date = params[:issue][:due_date].blank? ? start_date : params[:issue][:due_date] if params[:issue][:due_date].blank?
 
-                tbegin = (!params[:issue][:custom_field_values].key?(time_begin_cf) || params[:issue][:custom_field_values][time_begin_cf].blank?) ? (Setting.try(:plugin_mega_calendar)[:default_min_time] rescue '00:00') : params[:issue][:custom_field_values][time_begin_cf]
-                tend = (!params[:issue][:custom_field_values].key?(time_end_cf) || params[:issue][:custom_field_values][time_end_cf].blank?) ? (Setting.try(:plugin_mega_calendar)[:default_max_time] rescue '23:00') : params[:issue][:custom_field_values][time_end_cf]
+                timeBeginNotExists = !params[:issue][:custom_field_values].key?(time_begin_cf) || params[:issue][:custom_field_values][time_begin_cf].blank?
+                timeEndNotExists = !params[:issue][:custom_field_values].key?(time_end_cf) || params[:issue][:custom_field_values][time_end_cf].blank?
 
-                time_begin = start_date.to_s + ' ' + tbegin
-                time_end = due_date.to_s + ' ' + tend
+                binding.pry_remote
+
+                if (!timeBeginNotExists || !timeEndNotExists)
+                  tbegin = (timeBeginNotExists) ? (Setting.try(:plugin_mega_calendar)[:default_min_time] rescue '00:00') : params[:issue][:custom_field_values][time_begin_cf]
+                  tend = (timeEndNotExists) ? (Setting.try(:plugin_mega_calendar)[:default_max_time] rescue '23:00') : params[:issue][:custom_field_values][time_end_cf]
+                
+                  time_begin = start_date.to_s + ' ' + tbegin
+                  time_end = due_date.to_s + ' ' + tend
+                else
+                  time_begin = nil
+                  time_end = nil
+                end
 
                 time_fields_cv = @issue.custom_values.where(:custom_field_id => [time_begin_cf.to_i, time_end_cf.to_i])
 

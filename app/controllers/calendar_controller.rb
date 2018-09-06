@@ -286,6 +286,8 @@ class CalendarController < ApplicationController
   end
   def change_issue
     i = Issue.find(params[:id])
+    time_begin_cf = Setting.try(:plugin_mega_calendar)[:time_begin_custom_field] rescue nil
+    time_end_cf = Setting.try(:plugin_mega_calendar)[:time_end_custom_field] rescue nil
     if params[:event_end].blank?
       event_end = params[:event_begin]
     else
@@ -296,17 +298,30 @@ class CalendarController < ApplicationController
     end
     i.update_attributes({:start_date => params[:event_begin].to_date.to_s, :due_date => event_end.to_date.to_s}) rescue nil
     if params[:allDay] != 'true'
+
+      time_begin_cv = i.custom_values.where(custom_field_id: time_begin_cf.to_i).last
+      time_end_cv = i.custom_values.where(custom_field_id: time_end_cf.to_i).last
+
       tt = TicketTime.where(:issue_id => params[:id]).first
       if tt.blank?
-        tt = TicketTime.new(:issue_id => params[:id])
+        tt = TicketTime.new(:issue_id => params[:id], :time_begin_custom_value_id =>time_begin_cv.id, :time_end_custom_value_id => time_end_cv.id)
       end
+
       tt.time_begin = params[:event_begin].to_datetime.to_s
+
+      time_begin_cv.value = tt.time_begin.to_datetime.strftime('%H:%M')     
+      
       if !params[:event_end].blank?
         tt.time_end = params[:event_end].to_datetime.to_s rescue nil
       else
         i.update_attributes({:due_date => (params[:event_begin].to_datetime + 2.hours).to_datetime.to_s})
         tt.time_end = (params[:event_begin].to_datetime + 2.hours).to_datetime.to_s
       end
+      time_end_cv.value = tt.time_end.to_datetime.strftime('%H:%M')
+
+      time_begin_cv.save
+      time_end_cv.save
+
       tt.save
     else
       tt = TicketTime.where(:issue_id => params[:id]).first rescue nil
