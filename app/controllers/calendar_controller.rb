@@ -302,6 +302,8 @@ class CalendarController < ApplicationController
       time_begin_cv = i.custom_values.where(custom_field_id: time_begin_cf.to_i).last
       time_end_cv = i.custom_values.where(custom_field_id: time_end_cf.to_i).last
 
+      journal = Journal.new(journalized_id: i.id, journalized_type: 'Issue', user_id: User.current.id).save rescue nil
+
       tt = TicketTime.where(:issue_id => params[:id]).first
       if tt.blank?
         tt = TicketTime.new(:issue_id => params[:id], :time_begin_custom_value_id =>time_begin_cv.id, :time_end_custom_value_id => time_end_cv.id)
@@ -309,18 +311,26 @@ class CalendarController < ApplicationController
 
       tt.time_begin = params[:event_begin].to_datetime.to_s
 
-      time_begin_cv.value = tt.time_begin.to_datetime.strftime('%H:%M')     
+      time_begin_cv_old_Value = time_begin_cv.value
       
+      time_begin_cv.value = tt.time_begin.to_datetime.strftime('%H:%M')
+
       if !params[:event_end].blank?
         tt.time_end = params[:event_end].to_datetime.to_s rescue nil
       else
         i.update_attributes({:due_date => (params[:event_begin].to_datetime + 2.hours).to_datetime.to_s})
         tt.time_end = (params[:event_begin].to_datetime + 2.hours).to_datetime.to_s
       end
+
+      time_end_cv_old_value = time_end_cv.value
+
       time_end_cv.value = tt.time_end.to_datetime.strftime('%H:%M')
 
       time_begin_cv.save
+      JournalDetail.new(journal_id: journal.id, property: 'cf', prop_key: time_begin_cv.custom_field.id, old_value: time_begin_cv_old_Value, new_value: time_begin_cv.value).save rescue nil
+
       time_end_cv.save
+      JournalDetail.new(journal_id: journal.id, property: 'cf', prop_key: time_end_cv.custom_field.id, old_value: time_end_cv_old_Value, new_value: time_end_cv.value).save rescue nil
 
       tt.save
     else
