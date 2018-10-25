@@ -33,7 +33,7 @@ class MigrateDataToCustomValues < ActiveRecord::Migration
         ticket_time.time_end_custom_value_id = time_end_cv.id
       end
 
-      ticket_time.save if (!ticket_time.time_begin_custom_value_id.nil? || !ticket_time.time_end_custom_value_id.nil?)
+      ticket_time.save if (ticket_time.time_begin_custom_value_id.present? || ticket_time.time_end_custom_value_id.present?)
     end
   end
 
