@@ -25,6 +25,7 @@ pt-BR:
   display_empty_dates: "Mostrar Tarefas sem Data"
   displayed_within_calendar: "Mostrar no calendário"
   issue_open_as_project: "Abrir Chamado com um determinado Projeto"
+  only_admins_can_modify_filters: "Apenas Admins podem modificar Filtros"
   def_holiday_color: "Cor padrão para Feriados"
   def_color: "Cor Padrão"
   project: "Projetos"

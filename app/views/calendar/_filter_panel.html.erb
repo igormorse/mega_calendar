@@ -1,3 +1,10 @@
+<% 
+  only_admins_can_modify_filters = Setting.try(:plugin_mega_calendar)[:only_admins_can_modify_filters] rescue false
+  is_user_admin = User.current.admin
+
+  enable_clicking = (!only_admins_can_modify_filters || (only_admins_can_modify_filters && is_user_admin))
+%>
+
 <style>
 
   .btn-disabled[disabled] {
@@ -8,64 +15,87 @@
 </style>
 
 <form id="calendar_filter">
-<fieldset id="filters" class="collapsible  collapsed" style="padding-bottom: 20px;">
-  <legend onclick="toggleFieldset(this);"><%= translate 'description_filter' %></legend>
-  <div style="display: none;">
-    <table>
-    <% $mc_filters.keys.each do |filter_name|%>
-    <% filter = $mc_filters[filter_name] %>
+  <fieldset id="filters" class="collapsible collapsed" style="padding-bottom: 20px;">
+    <legend onclick="toggleFieldset(this);"><%= translate 'description_filter' %></legend>
+    <div style="display: none;">
+      <table>
+      <% $mc_filters.keys.each do |filter_name|%>
+      <% filter = $mc_filters[filter_name] %>
+        <tr>
+          <td style="padding-left: 10px;">
+            <input type="checkbox" id="filter_id_<%= filter_name %>_enabled" name="filter[<%= filter_name %>][enabled]" />
+          </td>
+          <td style="padding-left: 10px;">
+            <%= translate filter[:label] %>
+          </td>
+          <td style="padding-left: 10px;">
+            <select style="width: 100px;" id="filter_id_<%= filter_name %>_operator" name="filter[<%= filter_name %>][operator]" data-sel="filter_operator">
+              <% filter[:operators].each do |op| %>
+                <option value="<%= op.to_s %>"><%= translate 'label_'+op.to_s %></option>
+              <% end %>
+            </select>
+          </td>
+          <td style="padding-left: 10px;">
+            <% if filter[:type] == 'lookup' %>
+              <% lookup_items = eval(filter[:lookup_query]+".collect {|x| [x."+filter[:lookup_id]+",x."+filter[:lookup_value]+"]}") %>
+              <select style="width: 200px;" id="filter_id_<%= filter_name %>_value" name="filter[<%= filter_name %>][value][]" data-sel="filter_value_select" multiple>
+                <% lookup_items.each do |item| %>
+                  <option value="<%= item[0] %>"><%= item[1] %></option>
+                <% end %>
+              </select>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
       <tr>
         <td style="padding-left: 10px;">
-          <input type="checkbox" id="filter_id_<%= filter_name %>_enabled" name="filter[<%= filter_name %>][enabled]" />
+          <input type="checkbox" id="filter_id_custom_field_enabled" name="filter[custom_field][enabled]" />
         </td>
         <td style="padding-left: 10px;">
-          <%= translate filter[:label] %>
+          Custom Field Value
         </td>
         <td style="padding-left: 10px;">
-          <select style="width: 100px;" id="filter_id_<%= filter_name %>_operator" name="filter[<%= filter_name %>][operator]" data-sel="filter_operator">
-            <% filter[:operators].each do |op| %>
-              <option value="<%= op.to_s %>"><%= translate 'label_'+op.to_s %></option>
+          <select style="width: 100px;" id="filter_id_custom_field_id" name="filter[custom_field][id]" data-sel="filter_id">
+            <% CustomField.all.order("name ASC").each do |cf| %>
+              <option value=<%= cf.id %>><%= cf.name %></option>
             <% end %>
           </select>
         </td>
         <td style="padding-left: 10px;">
-          <% if filter[:type] == 'lookup' %>
-            <% lookup_items = eval(filter[:lookup_query]+".collect {|x| [x."+filter[:lookup_id]+",x."+filter[:lookup_value]+"]}") %>
-            <select style="width: 200px;" id="filter_id_<%= filter_name %>_value" name="filter[<%= filter_name %>][value][]" data-sel="filter_value_select" multiple>
-              <% lookup_items.each do |item| %>
-                <option value="<%= item[0] %>"><%= item[1] %></option>
-              <% end %>
-            </select>
-          <% end %>
+          <input type="text" id="filter_id_custom_field_value" name="filter[custom_field][value]" />
         </td>
-      </tr>
-    <% end %>
-    </table>
-    <a href="#" class="icon icon-checked" onclick="$('#calendar').fullCalendar( 'refetchEvents' );"><%= translate 'button_apply' %></a> &nbsp; <a href="#" class="icon icon-reload" onclick="reset_and_reload_filters();"><%= translate 'button_reset' %></a>
-    <div>
-      <hr>
-      <table>
-        <tr>
-          <td><%= translate 'filter_name' %></td>
-          <td style="padding-left: 10px;"><input type="text" id="inp_filter_name" name="filter_name" /></td>
-        </tr>
-        <tr>
-          <td><%= translate 'global_filter' %></td>
-          <td style="padding-left: 10px;"><input type="checkbox" id="inp_filter_global" name="filter_global" /></td>
         </tr>
       </table>
-      <a href="#" class="icon icon-save" onclick="save_filters();"><%= translate 'button_save' %></a>
+      <a href="#" class="icon icon-checked" onclick="$('#calendar').fullCalendar( 'refetchEvents' );"><%= translate 'button_apply' %></a> &nbsp; <a href="#" class="icon icon-reload" onclick="reset_and_reload_filters();"><%= translate 'button_reset' %></a>
+      <div>
+        <hr>
+        <table>
+          <tr>
+            <td><%= translate 'filter_name' %></td>
+            <td style="padding-left: 10px;"><input type="text" id="inp_filter_name" name="filter_name" /></td>
+          </tr>
+          <tr>
+            <td><%= translate 'global_filter' %></td>
+            <td style="padding-left: 10px;"><input type="checkbox" id="inp_filter_global" name="filter_global" /></td>
+          </tr>
+        </table>
+        <% if enable_clicking %>
+         <a href="#" class="icon icon-save" onclick="save_filters();"><%= translate 'button_save' %></a>
+        <% else %>
+          <a href="#" class="icon icon-save btn-disabled" disabled onclick="save_filters();"><%= translate 'button_save' %></a>
+        <% end %>
+      </div>
     </div>
-  </div>
-</fieldset>
+  </fieldset>
 </form>
+
 <table>
   <tr>
     <td><%= translate 'use_saved_filter' %></td>
     <td style="padding-left: 10px;">
-      <%= select_tag 'sel_saved_filter', options_from_collection_for_select(UserFilter.all,:id,:filter_name, Setting.try(:plugin_mega_calendar)[:calendar_default_filter]), :include_blank => true  %>
+      <%= select_tag 'sel_saved_filter', options_from_collection_for_select(UserFilter.all.order(:filter_name),:id,:filter_name, Setting.try(:plugin_mega_calendar)[:calendar_default_filter]), :include_blank => true  %>
 
-      <% if User.current.admin %>
+      <% if enable_clicking %>
         <a href="#" class="icon icon-del btn-disabled" onclick="window.location = '<%= Setting.plugin_mega_calendar['sub_path'] %>calendar/destroy_filter?id='+$('#sel_saved_filter').val();"><%= translate 'button_delete' %></a>
       <% else %>
         <a href="#" class="icon icon-del btn-disabled" disabled onclick="window.location = '<%= Setting.plugin_mega_calendar['sub_path'] %>calendar/destroy_filter?id='+$('#sel_saved_filter').val();"><%= translate 'button_delete' %></a>
@@ -91,21 +121,24 @@
       use_saved_filter(data);
     });
   }
-  function use_saved_filter(id) {
+  function use_saved_filter(id, refresh = true) {
     $.get('<%= Setting.plugin_mega_calendar['sub_path'] %>calendar/get_saved_filters', {id: id}, function(data) {
       Object.keys(data["filter"]).forEach(function(key,index) {
         $("#filter_id_"+key+"_enabled").prop('checked', (data["filter"][key]["enabled"] === "true" ? true : false));
         $("#filter_id_"+key+"_value").val(data["filter"][key]["value"]);
         $("#filter_id_"+key+"_operator").val(data["filter"][key]["operator"]);
+        $("#filter_id_"+key+"_id").val(data["filter"][key]["id"]);
       });
       $("#inp_filter_name").val(data["name"]);
       $("#inp_filter_global").prop('checked', data["global"]);
-      $('#calendar').fullCalendar( 'refetchEvents' );
+
+      if (refresh)
+        $('#calendar').fullCalendar( 'refetchEvents' );
     });
   }
 
   if ('<%= Setting.try(:plugin_mega_calendar)[:calendar_default_filter].present? %>'){
-    use_saved_filter('<%= Setting.try(:plugin_mega_calendar)[:calendar_default_filter] %>')
+    use_saved_filter('<%= Setting.try(:plugin_mega_calendar)[:calendar_default_filter] %>');
   }
 
 </script>

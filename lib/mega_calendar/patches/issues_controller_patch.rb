@@ -55,8 +55,6 @@ module MegaCalendar
                 timeBeginNotExists = !params[:issue][:custom_field_values].key?(time_begin_cf) || params[:issue][:custom_field_values][time_begin_cf].blank?
                 timeEndNotExists = !params[:issue][:custom_field_values].key?(time_end_cf) || params[:issue][:custom_field_values][time_end_cf].blank?
 
-                binding.pry_remote
-
                 if (!timeBeginNotExists || !timeEndNotExists)
                   tbegin = (timeBeginNotExists) ? (Setting.try(:plugin_mega_calendar)[:default_min_time] rescue '00:00') : params[:issue][:custom_field_values][time_begin_cf]
                   tend = (timeEndNotExists) ? (Setting.try(:plugin_mega_calendar)[:default_max_time] rescue '23:00') : params[:issue][:custom_field_values][time_end_cf]

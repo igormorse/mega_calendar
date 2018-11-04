@@ -58,6 +58,8 @@
 
 <script type="text/javascript">
   var user_query = <%= js_user_query.to_s %>;
+  var first_time_loading = true;
+
   function set_active_button(user) {
     var btn_mytickets = $('.fc-myTickets-button');
     var btn_alltickets = $('.fc-allTickets-button');
@@ -71,49 +73,49 @@
   }
   
   $(document).ready(function() {
-    $('#calendar').fullCalendar({
-        locale: '<%= js_locale %>',
-        defaultView: '<%= default_view %>',
-        nowIndicator: '<%= default_now_indicator %>',
-        navLinks: '<%= default_nav_links %>',
-        minTime: '<%= default_min_time %>',
-        maxTime: '<%= default_max_time %>',
-        height: 'auto',
-        selectable: '<%= editable %>' == 'true',
-        customButtons: {
-                myTickets: {
-                        text: '<%= t(:my_issues) %>',
-                        click: function() {
-                          user_query = true;
-                          set_active_button(user_query);
-                          $('#calendar').fullCalendar( 'refetchEvents' );
-                        }
-                },
-                allTickets: {
-                        text: '<%= t(:all_issues) %>',
-                        click: function() {
-                          user_query = false;
-                          set_active_button(user_query);
-                          $('#calendar').fullCalendar( 'refetchEvents' );
-                        }
-                },
-                refresh: {
-                  text: '<%= t(:refresh) %>',
-                  click: function(){
-                    use_saved_filter($('#sel_saved_filter').val());
-                  }
-                }
-
+  $('#calendar').fullCalendar({
+      locale: '<%= js_locale %>',
+      defaultView: '<%= default_view %>',
+      nowIndicator: '<%= default_now_indicator %>',
+      navLinks: '<%= default_nav_links %>',
+      minTime: '<%= default_min_time %>',
+      maxTime: '<%= default_max_time %>',
+      height: 'auto',
+      selectable: '<%= editable %>' == 'true',
+      customButtons: {
+        myTickets: {
+          text: '<%= t(:my_issues) %>',
+          click: function() {
+            user_query = true;
+            set_active_button(user_query);
+            $('#calendar').fullCalendar( 'refetchEvents' );
+          }
         },
-        header: {
-                        left: '<%= (show_view_buttons == false ? '' : 'prev,next today ' + default_buttons.join(',')) %>',
-                        center: 'title',
-                        right: '<%= (show_view_buttons == false ? '' : 'month,agendaWeek,agendaDay,listWeek') %>'
-                },
-        displayEventEnd: true,
-        defaultDate: '<%= js_default_date %>',
-	firstDay: <%= (Setting.plugin_mega_calendar['week_start'].blank? ? '1' : Setting.plugin_mega_calendar['week_start'].to_s ) %>,
-        events: function(start, end, timezone, callback) {
+        allTickets: {
+          text: '<%= t(:all_issues) %>',
+          click: function() {
+            user_query = false;
+            set_active_button(user_query);
+            $('#calendar').fullCalendar( 'refetchEvents' );
+          }
+        },
+        refresh: {
+          text: '<%= t(:refresh) %>',
+          click: function(){
+            use_saved_filter($('#sel_saved_filter').val());
+          }
+        }
+      },
+      header: {
+        left: '<%= (show_view_buttons == false ? '' : 'prev,next today ' + default_buttons.join(',')) %>',
+        center: 'title',
+        right: '<%= (show_view_buttons == false ? '' : 'month,agendaWeek,agendaDay,listWeek') %>'
+      },
+      displayEventEnd: true,
+      defaultDate: '<%= js_default_date %>',
+      firstDay: <%= (Setting.plugin_mega_calendar['week_start'].blank? ? '1' : Setting.plugin_mega_calendar['week_start'].to_s ) %>,
+      events: function(start, end, timezone, callback) {
+        if (!first_time_loading){
           $.ajax({
             url: '<%= Setting.plugin_mega_calendar['sub_path'] %>calendar/get_events',
             dataType: 'json',
@@ -130,78 +132,80 @@
               callback(events);
             }
         });
-      },
-      eventRender: function(event, element, view) {
-          element.qtip({ 
-            content: event.description, 
-            position: { 
-                target: 'mouse',
-                my: 'bottom left', 
-                adjust: { 
-                  x: 5,
-                  y: 5
-                }
-              } 
-            });
-          if (view.type == 'listWeek') {
-            var toInject = [];
-            toInject.push(event.status);
-            for (var i = 0; i < 1; i++) {	               
-                element.append('<td class="fc-list-item-title fc-widget-content">' + toInject[0] + '</td>');
-            }          
-          }
-      },
-      resourceRender: function(resourceObj, labelTds, bodyTds) {
-        labelTds.eq(0).find('.fc-widget-header');
-      },
-      eventLimit: true,
-      editable: '<%= editable %>' == 'true',
-      eventDrop: function(event, delta, revertFunc) {
-        if(!confirm("<%= (translate 'save_question') %>")) {
-          revertFunc();
-        } else {
-          var event_begin = event.start.format();
-          var event_end = (event.end !== null ? event.end.format() : null);
-          var allDay = event.allDay;
-          $.get('<%= Setting.plugin_mega_calendar['sub_path'] %>calendar/change_' + event.controller_name, { id: event.id, event_begin: event_begin, event_end: event_end, allDay: allDay });
-        }
-      },
-      eventResize: function(event, delta, revertFunc) {
-        if(!confirm("<%= (translate 'save_question') %>")) {
-          revertFunc();
-        } else {
-          $.get('<%= Setting.plugin_mega_calendar['sub_path'] %>calendar/change_' + event.controller_name, { id: event.id, event_begin: event.start.format(), event_end: event.end.format() });
-        }
-      },
-      select: function(start, end) {
-        $('#calendar').fullCalendar('unselect');
+      }
+      first_time_loading = false;
+    },
+    eventRender: function(event, element, view) {
+      element.qtip({ 
+        content: event.description, 
+        position: { 
+            target: 'mouse',
+            my: 'bottom left', 
+            adjust: { 
+              x: 5,
+              y: 5
+            }
+          } 
+        });
+      if (view.type == 'listWeek') {
+        var toInject = [];
+        toInject.push(event.status);
+        for (var i = 0; i < 1; i++) {	               
+          element.append('<td class="fc-list-item-title fc-widget-content">' + toInject[0] + '</td>');
+        }          
+      }
+    },
+    resourceRender: function(resourceObj, labelTds, bodyTds) {
+      labelTds.eq(0).find('.fc-widget-header');
+    },
+    eventLimit: true,
+    editable: '<%= editable %>' == 'true',
+    eventDrop: function(event, delta, revertFunc) {
+      if(!confirm("<%= (translate 'save_question') %>")) {
+        revertFunc();
+      } else {
+        var event_begin = event.start.format();
+        var event_end = (event.end !== null ? event.end.format() : null);
+        var allDay = event.allDay;
+        $.get('<%= Setting.plugin_mega_calendar['sub_path'] %>calendar/change_' + event.controller_name, { id: event.id, event_begin: event_begin, event_end: event_end, allDay: allDay });
+      }
+    },
+    eventResize: function(event, delta, revertFunc) {
+      if(!confirm("<%= (translate 'save_question') %>")) {
+        revertFunc();
+      } else {
+        $.get('<%= Setting.plugin_mega_calendar['sub_path'] %>calendar/change_' + event.controller_name, { id: event.id, event_begin: event.start.format(), event_end: event.end.format() });
+      }
+    },
+    select: function(start, end) {
+      $('#calendar').fullCalendar('unselect');
 
-        <%
-          # Refactor everything below to something more prettier...
+      <%
+        # Refactor everything below to something more prettier...
 
-          @include_project_id = "issue[project_id]=#{Setting.try(:plugin_mega_calendar)[:issue_open_as_project]}" rescue ''
-    
-          @include_time_begin_cf_value = "&issue[custom_field_values][#{Setting.try(:plugin_mega_calendar)[:time_begin_custom_field].to_s}]" rescue ''
+        @include_project_id = "issue[project_id]=#{Setting.try(:plugin_mega_calendar)[:issue_open_as_project]}" rescue ''
+  
+        @include_time_begin_cf_value = "&issue[custom_field_values][#{Setting.try(:plugin_mega_calendar)[:time_begin_custom_field].to_s}]" rescue ''
 
-          @include_time_end_cf_value = "&issue[custom_field_values][#{Setting.try(:plugin_mega_calendar)[:time_end_custom_field].to_s}]" rescue ''
-        %>
+        @include_time_end_cf_value = "&issue[custom_field_values][#{Setting.try(:plugin_mega_calendar)[:time_end_custom_field].to_s}]" rescue ''
+      %>
 
-        if ('<%= @include_time_begin_cf_value.present? %>' == 'true')
-          timeBegin = '<%= "#{@include_time_begin_cf_value}=".html_safe %>' + start.format("HH:mm");
-        else
-          timeBegin = '';
+      if ('<%= @include_time_begin_cf_value.present? %>' == 'true')
+        timeBegin = '<%= "#{@include_time_begin_cf_value}=".html_safe %>' + start.format("HH:mm");
+      else
+        timeBegin = '';
 
-        if ('<%= @include_time_end_cf_value.present? %>' == 'true')
-          timeEnd = '<%= "#{@include_time_end_cf_value.html_safe}=".html_safe %>' + end.format("HH:mm");
-        else
-          timeEnd = '';
+      if ('<%= @include_time_end_cf_value.present? %>' == 'true')
+        timeEnd = '<%= "#{@include_time_end_cf_value.html_safe}=".html_safe %>' + end.format("HH:mm");
+      else
+        timeEnd = '';
 
-        issueUrl = '<%= "#{Setting.plugin_mega_calendar['sub_path']}issues/new?#{@include_project_id.html_safe}" %>&issue[start_date]='+start.format("YYYY-MM-DD")+'&issue[due_date]='+end.format("YYYY-MM-DD")+timeBegin+timeEnd;
+      issueUrl = '<%= "#{Setting.plugin_mega_calendar['sub_path']}issues/new?#{@include_project_id.html_safe}" %>&issue[start_date]='+start.format("YYYY-MM-DD")+'&issue[due_date]='+end.format("YYYY-MM-DD")+timeBegin+timeEnd;
 
-        // window.open('<%= Setting.plugin_mega_calendar['sub_path'] %>issues/new?<%= @include_project_id.html_safe %>issue[start_date]='+start.format("YYYY-MM-DD")+'&issue[due_date]='+end.format("YYYY-MM-DD")+'<%= @include_time_begin_cf_value %>'+start.format("HH:mm")+'<%= @include_time_end_cf_value %>'+end.format("HH:mm"), '_blank');
-        window.open(issueUrl);
-      },
-    });
-    set_active_button(user_query);
+      // window.open('<%= Setting.plugin_mega_calendar['sub_path'] %>issues/new?<%= @include_project_id.html_safe %>issue[start_date]='+start.format("YYYY-MM-DD")+'&issue[due_date]='+end.format("YYYY-MM-DD")+'<%= @include_time_begin_cf_value %>'+start.format("HH:mm")+'<%= @include_time_end_cf_value %>'+end.format("HH:mm"), '_blank');
+      window.open(issueUrl);
+    },
+  });
+  set_active_button(user_query);
   });
 </script>

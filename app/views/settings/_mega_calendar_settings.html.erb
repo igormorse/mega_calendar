@@ -23,6 +23,12 @@
       </td>
     </tr>
     <tr>
+      <th><%= t('only_admins_can_modify_filters') %>:</th>
+      <td>
+        <%= check_box_tag 'settings[only_admins_can_modify_filters]', true, settings['only_admins_can_modify_filters']  %>
+      </td>
+    </tr>
+    <tr>
     <th><%= t(:calendar_min_time) %>:</th>
       <td>
         <input type="text" id="settings_default_min_time" name="settings[default_min_time]" class="form-control clockpicker" value="<%= settings.key?(:default_min_time) ? settings['default_min_time'] : '00:00' %>" placeholder="<%=l(:placeholder_allday)%>">

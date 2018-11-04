@@ -204,10 +204,13 @@ class CalendarController < ApplicationController
         session[:mega_calendar_js_default_date] = (fbegin.to_date.beginning_of_month + 1.month).to_s
       end
     end
+    filters = params[:filter]
     fbegin = (Time.zone.today - 1.month) if(fbegin.blank?)
     fend = (Time.zone.today + 1.month) if(fend.blank?)
-    issues_condition = query_filter('Issue', params[:filter])
-    holidays_condition = query_filter('Holiday', params[:filter])
+
+    issues_condition = query_filter('Issue', filters.except('custom_field'))
+    holidays_condition = query_filter('Holiday', filters.except('custom_field'))
+
     if fuser.blank?
       holidays = Holiday.where(['((holidays.start <= ? AND holidays.end >= ?) OR (holidays.start BETWEEN ? AND ?)  OR (holidays.end BETWEEN ? AND ?))',fbegin.to_s,fend.to_s,fbegin.to_s,fend.to_s,fbegin.to_s,fend.to_s]).where(holidays_condition) rescue []
       issues = Issue.where(['((issues.start_date <= ? AND issues.due_date >= ?) OR (issues.start_date BETWEEN ? AND ?)  OR (issues.due_date BETWEEN ? AND ?))',fbegin.to_s,fend.to_s,fbegin.to_s,fend.to_s,fbegin.to_s,fend.to_s]).where(issues_condition) rescue []
@@ -237,6 +240,15 @@ class CalendarController < ApplicationController
     issues = issues + issues2 + issues3 + issues4
     issues = issues.compact.uniq
     issues.each do |i|
+      
+      if (filters.key?(:custom_field) && filters[:custom_field][:enabled])
+
+        cf_filter = filters[:custom_field] rescue nil
+
+        next if (i.custom_values.where(custom_field_id: cf_filter[:id], value: cf_filter[:value]).blank? rescue false)
+
+      end
+
       ticket_time = TicketTime.where({:issue_id => i.id}).first rescue nil
       tbegin = ticket_time.time_begin.strftime(" %H:%M") rescue ''
       tend = ticket_time.time_end.strftime(" %H:%M") rescue ''
