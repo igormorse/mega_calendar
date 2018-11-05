@@ -7,7 +7,7 @@ module MegaCalendar
         base.class_eval do
           unloadable # Send unloadable so it will not be unloaded in developmen
 
-          has_one(:ticket_times, dependent: :delete)
+          has_one(:ticket_time, dependent: :delete)
         end
       end
     end
