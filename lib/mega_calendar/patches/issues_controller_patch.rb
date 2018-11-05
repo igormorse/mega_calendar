@@ -12,7 +12,7 @@ module MegaCalendar
               time_begin_cf = Setting.try(:plugin_mega_calendar)[:time_begin_custom_field] rescue nil
               time_end_cf = Setting.try(:plugin_mega_calendar)[:time_end_custom_field] rescue nil
 
-              if !time_begin_cf.nil? && !time_end_cf.nil? && (!params[:issue][:start_date].blank? || !@issue.start_date.blank?) && (params[:issue][:custom_field_values].key?(time_begin_cf) || params[:issue][:custom_field_values].key?(time_end_cf))
+              if !time_begin_cf.nil? && !time_end_cf.nil? && (!params[:issue][:start_date].blank? || !@issue.start_date.blank?) && (params[:issue][:custom_field_values].present? && (params[:issue][:custom_field_values].key?(time_begin_cf) || params[:issue][:custom_field_values].key?(time_end_cf)))
 
                 start_date = params[:issue][:start_date].blank? ? @issue.start_date : params[:issue][:start_date]
                 
@@ -46,7 +46,7 @@ module MegaCalendar
               time_begin_cf = Setting.try(:plugin_mega_calendar)[:time_begin_custom_field] rescue nil
               time_end_cf = Setting.try(:plugin_mega_calendar)[:time_end_custom_field] rescue nil
 
-              if !time_begin_cf.nil? && !time_end_cf.nil? && (!params[:issue][:start_date].blank? || !@issue.start_date.blank?) && (params[:issue][:custom_field_values].key?(time_begin_cf) || params[:issue][:custom_field_values].key?(time_end_cf))
+              if !time_begin_cf.nil? && !time_end_cf.nil? && (!params[:issue][:start_date].blank? || !@issue.start_date.blank?) && (params[:issue][:custom_field_values].present? && (params[:issue][:custom_field_values].key?(time_begin_cf) || params[:issue][:custom_field_values].key?(time_end_cf)))
 
                 start_date = params[:issue][:start_date].blank? ? @issue.start_date : params[:issue][:start_date]
                 
